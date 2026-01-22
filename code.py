@@ -1,12 +1,21 @@
 '''
-Code for Raspberry Pi Pico board of the ESC204 PSA Project
+This file contains the code to configure the Raspberry Pi Pico board used in the ESC204 PSA Project
+
+The implementation has 3 buttons represented by the following variables: 'off_button,' 'plant_button,' and 'people_button.' The code ensures that each button activates a unique sequence of LED's when pressed. There is a green, red and blue LED. The respective button sequences are as follows:
+    off_button: no LED's on.
+    plant_button: red and blue LED's on, green LED off.
+    people_button: all LED's on.
+
+The blue, red and green LED's are respectively represented by the 'b_led,' 'r_led' and 'g_led' variables.
 '''
 
 # import libaries for blinking external LED
 import board
 import digitalio
 
-# configure pins the turn on the LED's for output
+# configure LED pins
+    # blue LED at GP18, red LED at GP19, green LED at GP20
+    # configure each pin to send an output
 b_led = digitalio.DigitalInOut(board.GP18)
 b_led.direction = digitalio.Direction.OUTPUT
 
@@ -16,7 +25,11 @@ r_led.direction = digitalio.Direction.OUTPUT
 g_led = digitalio.DigitalInOut(board.GP20)
 g_led.direction = digitalio.Direction.OUTPUT
 
-# configure buttons to input to the Pico, use PULLUP resistors
+# configure buttons:
+    # off button at GP13, plant button at GP12 and people button at GP11
+    # each pin configured to accept inputs
+    # each configured with PULLUP resistors
+
 off_button = digitalio.DigitalInOut(board.GP13)
 off_button.direction = digitalio.Direction.INPUT
 off_button.pull = digitalio.Pull.UP
@@ -31,9 +44,13 @@ people_button.pull = digitalio.Pull.UP
 
 # implement functionality
 
-state = [0, 0, 0] # = [r, g, b] - default all lights off
+state = [0, 0, 0] # = [r, g, b] - default to all lights off
 
 def set_state(state):
+    '''
+    Takes in a list button states and returns None
+    Sets the value of each led according to the desired case
+    '''
 
     r_led.value = state[0]
     g_led.value = state[1]
@@ -41,7 +58,7 @@ def set_state(state):
 
     return
 
-while True:
+while True: # run while the pico is powered
     
     if (not off_button.value) or (not plant_button.value) or (not people_button.value): # check if a button was pressed
         if not off_button.value: # if off_button is pressed: ...
